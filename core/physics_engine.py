@@ -5,15 +5,10 @@ class SandSimulation2D:
     """
     2D Physics Engine solving Bagnold's Saltation Flux Law coupled with 
     the Exner Bed Elevation Conservation Partial Differential Equation.
+    Includes slope-wind speedup for realistic terrain-driven sand transport.
     """
 
     def __init__(self, elevation_grid, cell_size=30.0, dt=86400.0):
-        """
-        Args:
-            elevation_grid (2D np.ndarray): Initial bed height z(x,y) in meters.
-            cell_size (float): Spatial grid resolution (dx = dy) in meters.
-            dt (float): Physical time step per iteration in seconds (default = 1 day = 86,400s).
-        """
         self.Z_init = np.copy(elevation_grid).astype(np.float64)
         self.Z = np.copy(elevation_grid).astype(np.float64)
         self.ny, self.nx = self.Z.shape
@@ -28,90 +23,82 @@ class SandSimulation2D:
         self.u_threshold = 6.5          # Threshold wind speed for saltation (m/s)
         self.rho_sand = 2650.0          # Quartz grain density (kg/m^3)
         self.porosity = 0.40            # Loose sand packing porosity (eta)
+        self.beta_slope = 0.6           # Slope speedup coupling factor
 
     def compute_bagnold_flux(self, wind_speed, wind_dir_deg):
-        """
-        Calculates 2D sediment transport flux vectors (qx, qy) in kg/(m*s).
-        """
         if wind_speed <= self.u_threshold:
             return np.zeros_like(self.Z), np.zeros_like(self.Z)
 
-        # Bagnold Saltation Magnitude (kg / (m * s))
-        q_mag = self.C_bagnold * (self.rho_air / self.g) * ((wind_speed - self.u_threshold) ** 3)
-
-        # Convert meteorological wind direction (FROM) to sand motion direction (TOWARDS)
+        # Convert meteorological wind direction to motion direction vector
         towards_deg = (wind_dir_deg + 180.0) % 360.0
         rad = np.radians(towards_deg)
+        wx = np.sin(rad)
+        wy = -np.cos(rad)
 
-        # Vector decomposition into 2D grid coordinates
-        qx = q_mag * np.sin(rad) * np.ones_like(self.Z)
-        qy = -q_mag * np.cos(rad) * np.ones_like(self.Z) # Negative due to array row orientation
+        # Calculate local terrain slope along wind direction
+        dZ_dy, dZ_dx = np.gradient(self.Z, self.dy, self.dx)
+        directional_slope = dZ_dx * wx + dZ_dy * wy
+
+        # Modulate local wind speed based on terrain slope (speedup on ridges, slowing in dips)
+        local_u = wind_speed * (1.0 + self.beta_slope * directional_slope)
+        local_u = np.maximum(local_u, 0.0)
+
+        # Compute spatial Bagnold flux matrix
+        q_mag = np.where(
+            local_u > self.u_threshold,
+            self.C_bagnold * (self.rho_air / self.g) * ((local_u - self.u_threshold) ** 3),
+            0.0
+        )
+
+        qx = q_mag * wx
+        qy = q_mag * wy
 
         return qx, qy
 
-    def apply_windbreak_effects(self, qx, qy, barrier_mask, barrier_height=4.0, porosity=0.3):
-        """
-        Applies localized flux attenuation downwind of user-placed windbreak fences/tree lines.
-        """
+    def apply_windbreak_effects(self, qx, qy, barrier_mask, porosity=0.3):
         if barrier_mask is None or not np.any(barrier_mask):
             return qx, qy
 
         qx_mod = np.copy(qx)
         qy_mod = np.copy(qy)
 
-        # Attenuate sediment flux at and around barrier locations
-        reduction_factor = porosity # Residual flux passing through barrier
-        qx_mod[barrier_mask > 0] *= reduction_factor
-        qy_mod[barrier_mask > 0] *= reduction_factor
+        # Attenuate sediment flux at barrier location
+        qx_mod[barrier_mask > 0] *= porosity
+        qy_mod[barrier_mask > 0] *= porosity
 
-        # Simple 3-cell downwind shelter effect propagation
+        # Propagate downwind shelter zone
         sheltered = np.copy(barrier_mask)
-        for _ in range(3):
+        for _ in range(4):
             sheltered = np.roll(sheltered, shift=1, axis=0) | np.roll(sheltered, shift=1, axis=1)
-            qx_mod[sheltered > 0] *= (reduction_factor + 0.2)
-            qy_mod[sheltered > 0] *= (reduction_factor + 0.2)
+            qx_mod[sheltered > 0] *= (porosity + 0.15)
+            qy_mod[sheltered > 0] *= (porosity + 0.15)
 
         return qx_mod, qy_mod
 
     def step(self, wind_speed, wind_dir_deg, barrier_mask=None, speed_multiplier=1.0):
-        """
-        Executes one temporal step of the 2D Exner PDE:
-        dz/dt = -1 / (rho_s * (1 - eta)) * (dqx/dx + dqy/dy)
-        """
         effective_speed = wind_speed * speed_multiplier
         qx, qy = self.compute_bagnold_flux(effective_speed, wind_dir_deg)
 
         if barrier_mask is not None:
             qx, qy = self.apply_windbreak_effects(qx, qy, barrier_mask)
 
-        # Compute spatial derivatives using 2nd-order central differences
+        # Compute spatial divergence dqx/dx + dqy/dy
         dqx_dx = np.gradient(qx, self.dx, axis=1)
         dqy_dy = np.gradient(qy, self.dy, axis=0)
-
         divergence = dqx_dx + dqy_dy
 
-        # Exner Bed Height Change (m/s)
+        # Exner Bed Elevation Update Rate (m/s)
         gamma = 1.0 / (self.rho_sand * (1.0 - self.porosity))
         dz_dt = -gamma * divergence
 
-        # Update bed elevation Z
-        delta_Z = dz_dt * self.dt
-        
-        # Soft numerical smoothing to prevent grid instability
-        delta_Z = np.clip(delta_Z, -2.0, 2.0)
+        # Apply elevation change per timestep
+        delta_Z = np.clip(dz_dt * self.dt, -0.15, 0.15)
         self.Z += delta_Z
-
-        # Ensure elevation doesn't drop below hard bedrock floor (-5m relative to init)
-        self.Z = np.maximum(self.Z, self.Z_init - 5.0)
 
         return self.Z
 
     def get_accumulation_map(self):
-        """
-        Returns net sand accumulation/erosion relative to initial DEM state (in meters).
-        """
         return self.Z - self.Z_init
 
     def reset(self):
-        """Resets bed height grid to initial state."""
         self.Z = np.copy(self.Z_init)
