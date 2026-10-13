@@ -19,16 +19,15 @@ from core.economic_engine import SilicaSandEconomicEngine
 
 
 # -----------------------------------------------------------------------------
-# PAGE CONFIGURATION & ORGANIC DESIGN SYSTEM CSS
+# PAGE CONFIGURATION & CLEAN ORGANIC DESIGN SYSTEM
 # -----------------------------------------------------------------------------
 st.set_page_config(
     page_title="AeroDune | Physics-Based Sand Simulation & Economic Framework",
-    page_icon="🏜️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS Injection: Organic / Natural Design Tokens
+# Custom CSS Injection: Organic / Natural Design Tokens & Clean Controls
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Nunito:wght@400;600;700;800&display=swap');
@@ -45,8 +44,8 @@ st.markdown("""
         --muted-grass: #78786C;
         --border-timber: #DED8CF;
         --card-bg: #FEFEFA;
-        --shadow-moss: 0 8px 24px -4px rgba(93, 112, 82, 0.18);
-        --shadow-clay: 0 10px 30px -6px rgba(193, 140, 93, 0.22);
+        --shadow-moss: 0 4px 16px -2px rgba(93, 112, 82, 0.12);
+        --shadow-clay: 0 8px 24px -4px rgba(193, 140, 93, 0.18);
     }
 
     /* Global Typography & Background */
@@ -56,20 +55,20 @@ st.markdown("""
         font-family: 'Nunito', sans-serif !important;
     }
 
-    /* Texture Overlay Simulation */
+    /* Subtle Grain Texture Overlay */
     [data-testid="stAppViewContainer"]::before {
         content: "";
         position: fixed;
         top: 0; left: 0; width: 100%; height: 100%;
         background-image: radial-gradient(#2C2C24 0.5px, transparent 0.5px);
-        background-size: 24px 24px;
-        opacity: 0.03;
+        background-size: 28px 28px;
+        opacity: 0.025;
         pointer-events: none;
         z-index: 1;
     }
 
     /* Headings (Fraunces Soft Serif) */
-    h1, h2, h3, h4, .main-title {
+    h1, h2, h3, h4 {
         font-family: 'Fraunces', serif !important;
         color: var(--fg-loam) !important;
         font-weight: 700 !important;
@@ -78,28 +77,28 @@ st.markdown("""
     /* Sidebar Styling */
     [data-testid="stSidebar"] {
         background-color: var(--muted-stone) !important;
-        border-right: 1.5px solid var(--border-timber) !important;
-        padding-top: 2rem !important;
+        border-right: 1px solid var(--border-timber) !important;
+        padding-top: 1.5rem !important;
     }
 
     /* Tab Navigation Pills */
     .stTabs [data-baseweb="tab-list"] {
-        gap: 0.75rem !important;
+        gap: 0.5rem !important;
         background-color: var(--accent-sand) !important;
-        padding: 0.5rem !important;
+        padding: 0.4rem !important;
         border-radius: 9999px !important;
         border: 1px solid var(--border-timber) !important;
     }
 
     .stTabs [data-baseweb="tab"] {
-        height: 2.75rem !important;
+        height: 2.5rem !important;
         border-radius: 9999px !important;
         color: var(--fg-loam) !important;
         font-family: 'Nunito', sans-serif !important;
         font-weight: 700 !important;
-        padding: 0 1.5rem !important;
+        padding: 0 1.25rem !important;
         border: none !important;
-        transition: all 0.3s ease !important;
+        transition: all 0.25s ease !important;
     }
 
     .stTabs [aria-selected="true"] {
@@ -108,31 +107,31 @@ st.markdown("""
         box-shadow: var(--shadow-moss) !important;
     }
 
-    /* Custom Organic Pill Buttons */
+    /* Custom Organic Buttons */
     .stButton>button {
         background-color: var(--primary-moss) !important;
         color: var(--primary-mist) !important;
         font-family: 'Nunito', sans-serif !important;
         font-weight: 700 !important;
         border-radius: 9999px !important;
-        padding: 0.75rem 2.25rem !important;
+        padding: 0.6rem 2rem !important;
         border: none !important;
         box-shadow: var(--shadow-moss) !important;
-        transition: transform 0.25s ease, box-shadow 0.25s ease !important;
+        transition: transform 0.2s ease, box-shadow 0.2s ease !important;
     }
 
     .stButton>button:hover {
-        transform: scale(1.03) translateY(-2px) !important;
+        transform: translateY(-2px) !important;
         box-shadow: var(--shadow-clay) !important;
         background-color: #4f6045 !important;
     }
 
-    /* Organic Card Styling */
-    [data-testid="stMetric"], .organic-card {
+    /* Metrics Cards */
+    [data-testid="stMetric"] {
         background-color: var(--card-bg) !important;
         border: 1px solid var(--border-timber) !important;
-        border-radius: 1.75rem !important;
-        padding: 1.25rem 1.5rem !important;
+        border-radius: 1.25rem !important;
+        padding: 1rem 1.25rem !important;
         box-shadow: var(--shadow-moss) !important;
     }
 
@@ -142,63 +141,69 @@ st.markdown("""
         font-weight: 800 !important;
     }
 
-    /* Slider Styling */
-    .stSlider > div > div > div > div {
-        background-color: var(--primary-moss) !important;
+    /* Clean Streamlit Slider Overrides */
+    div[data-baseweb="slider"] {
+        margin-bottom: 0.5rem !important;
     }
 
-    /* Organic Footer Styling */
-    .footer-container {
+    /* Clean Docked Footer */
+    .clean-footer {
         margin-top: 4rem;
-        padding: 2.5rem 1.5rem;
-        background-color: var(--muted-stone);
-        border: 1px solid var(--border-timber);
-        border-radius: 2rem;
+        padding: 2rem 1rem;
+        border-top: 1px solid var(--border-timber);
         text-align: center;
-        box-shadow: var(--shadow-moss);
+        background-color: transparent;
     }
 
-    .footer-title {
+    .clean-footer .footer-brand {
         font-family: 'Fraunces', serif;
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 700;
         color: var(--fg-loam);
-        margin-bottom: 0.25rem;
+        margin-bottom: 0.2rem;
     }
 
-    .footer-sub {
+    .clean-footer .footer-subtitle {
         font-family: 'Nunito', sans-serif;
-        font-size: 0.95rem;
+        font-size: 0.85rem;
         color: var(--muted-grass);
-        margin-bottom: 1rem;
+        max-width: 800px;
+        margin: 0 auto 0.75rem auto;
+        line-height: 1.4;
     }
 
-    .footer-links {
+    .clean-footer .footer-dev {
+        font-family: 'Nunito', sans-serif;
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: var(--primary-moss);
+        margin-bottom: 0.85rem;
+    }
+
+    .clean-footer .footer-links-row {
         display: flex;
         justify-content: center;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
-    .footer-link-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        background-color: var(--bg-paper);
+    .clean-footer .footer-btn {
+        display: inline-block;
+        background-color: var(--card-bg);
         color: var(--primary-moss);
-        padding: 0.5rem 1.25rem;
+        padding: 0.4rem 1.2rem;
         border-radius: 9999px;
         border: 1px solid var(--border-timber);
         font-family: 'Nunito', sans-serif;
+        font-size: 0.85rem;
         font-weight: 700;
         text-decoration: none;
-        transition: all 0.25s ease;
+        transition: all 0.2s ease;
     }
 
-    .footer-link-btn:hover {
+    .clean-footer .footer-btn:hover {
         background-color: var(--primary-moss);
         color: var(--primary-mist);
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-moss);
+        border-color: var(--primary-moss);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -220,24 +225,24 @@ econ_engine = SilicaSandEconomicEngine()
 # -----------------------------------------------------------------------------
 # HEADER & BRANDING SECTION
 # -----------------------------------------------------------------------------
-st.markdown('<h1 style="font-size: 3rem; margin-bottom: 0.25rem;">🏜️ AeroDune</h1>', unsafe_allow_html=True)
-st.markdown('<h3 style="color: #5D7052; font-weight: 600; margin-top: 0;">A Physics-Based Spatiotemporal Simulation Framework for Wind-Blown Sand Encroachment, Windbreak Optimization, and Desert Resource Economics</h3>', unsafe_allow_html=True)
+st.markdown('<h1 style="font-size: 2.8rem; margin-bottom: 0.2rem;">AeroDune</h1>', unsafe_allow_html=True)
+st.markdown('<h3 style="color: #5D7052; font-weight: 600; margin-top: 0; font-size: 1.15rem;">A Physics-Based Spatiotemporal Simulation Framework for Wind-Blown Sand Encroachment, Windbreak Optimization, and Desert Resource Economics</h3>', unsafe_allow_html=True)
 st.markdown("""
 *Simulating 2D wind-blown sand migration over North Sinai infrastructure (Qantara–El Arish Highway)
 and analyzing macroeconomic GDP value-addition of Egypt's high-purity silica sand.*
 """)
-st.markdown("<hr style='border: none; border-top: 1.5px solid #DED8CF; margin: 1.5rem 0;'>", unsafe_allow_html=True)
+st.markdown("<hr style='border: none; border-top: 1px solid #DED8CF; margin: 1.25rem 0;'>", unsafe_allow_html=True)
 
 # -----------------------------------------------------------------------------
 # SIDEBAR CONTROLS
 # -----------------------------------------------------------------------------
-st.sidebar.markdown("<h2 style='font-size: 1.5rem;'>⚙️ Simulation Controls</h2>", unsafe_allow_html=True)
+st.sidebar.markdown("<h2 style='font-size: 1.3rem; margin-bottom: 1rem;'>Simulation Controls</h2>", unsafe_allow_html=True)
 
 sim_days = st.sidebar.slider("Simulation Horizon (Days)", min_value=1, max_value=365, value=60, step=5)
 wind_mult = st.sidebar.slider("Wind Intensity Multiplier", min_value=0.5, max_value=2.5, value=1.0, step=0.1)
 
-st.sidebar.markdown("<hr style='border: none; border-top: 1.5px solid #DED8CF; margin: 1.5rem 0;'>", unsafe_allow_html=True)
-st.sidebar.markdown("<h2 style='font-size: 1.5rem;'>🛡️ Windbreak Barrier Config</h2>", unsafe_allow_html=True)
+st.sidebar.markdown("<hr style='border: none; border-top: 1px solid #DED8CF; margin: 1.25rem 0;'>", unsafe_allow_html=True)
+st.sidebar.markdown("<h2 style='font-size: 1.3rem; margin-bottom: 1rem;'>Windbreak Barrier Config</h2>", unsafe_allow_html=True)
 
 enable_barrier = st.sidebar.checkbox("Deploy Virtual Windbreak Barrier", value=True)
 barrier_row = st.sidebar.slider("Barrier Row Grid Position", 0, dem_matrix.shape[0]-1, int(dem_matrix.shape[0]*0.35))
@@ -250,25 +255,14 @@ if enable_barrier:
     start_col = (dem_matrix.shape[1] - barrier_length) // 2
     barrier_mask[barrier_row, start_col:start_col+barrier_length] = 1
 
-# Sidebar Developer Badge
-st.sidebar.markdown("<hr style='border: none; border-top: 1.5px solid #DED8CF; margin: 1.5rem 0;'>", unsafe_allow_html=True)
-st.sidebar.markdown("""
-<div style="text-align: center; font-size: 0.85rem; color: #78786C;">
-    <b>© 2026 AeroDune</b><br>
-    Developed by <b>Mohamed Ghanem</b><br>
-    <a href="https://github.com/mooghanem" target="_blank" style="color: #5D7052; text-decoration: none;">GitHub</a> • 
-    <a href="https://www.linkedin.com/in/mohamedkhaledghanem" target="_blank" style="color: #5D7052; text-decoration: none;">LinkedIn</a>
-</div>
-""", unsafe_allow_html=True)
-
 # -----------------------------------------------------------------------------
 # DASHBOARD TABS
 # -----------------------------------------------------------------------------
 tab1, tab2, tab3, tab4 = st.tabs([
-    "🗺️ Topography & Infrastructure",
-    "🌪️ Live Sand Migration Engine",
-    "🚨 Hazard Alarm & Windbreak",
-    "📈 Economic & GDP Analytics"
+    "Topography & Infrastructure",
+    "Live Sand Migration Engine",
+    "Hazard Alarm & Windbreak",
+    "Economic & GDP Analytics"
 ])
 
 # -----------------------------------------------------------------------------
@@ -287,11 +281,9 @@ with tab1:
         cbar.ax.yaxis.label.set_color('#2C2C24')
         cbar.ax.tick_params(colors='#2C2C24')
         
-        # Overlay Road Network in Burnt Sienna/Red
         road_y, road_x = np.where(road_mask > 0)
         ax.scatter(road_x, road_y, c='#A85448', s=4, alpha=0.8, label='Qantara–El Arish Highway')
         
-        # Overlay Barrier in Moss Green
         if enable_barrier:
             b_y, b_x = np.where(barrier_mask > 0)
             ax.scatter(b_x, b_y, c='#5D7052', s=12, marker='s', label='Windbreak Barrier')
@@ -304,7 +296,7 @@ with tab1:
         st.pyplot(fig)
         
     with col2:
-        st.metric("DEM Grid Dimensions", f"{dem_matrix.shape[0]} × {dem_matrix.shape[1]}")
+        st.metric("DEM Grid Dimensions", f"{dem_matrix.shape[0]} x {dem_matrix.shape[1]}")
         st.metric("Spatial Resolution", "30 Meters / Cell")
         st.metric("Max Elevation", f"{np.max(dem_matrix):.1f} m")
         st.metric("Min Elevation", f"{np.min(dem_matrix):.1f} m")
@@ -315,7 +307,7 @@ with tab1:
 with tab2:
     st.subheader("2D Bagnold-Exner Spatiotemporal Sand Migration Solver")
     
-    run_sim = st.button("🚀 Run Physics Simulation")
+    run_sim = st.button("Run Physics Simulation")
     
     if run_sim or "sim_accumulation" in st.session_state:
         if run_sim:
@@ -359,16 +351,16 @@ with tab3:
         road_sand_depth = accumulation[road_mask > 0]
         max_road_sand = np.max(road_sand_depth) if len(road_sand_depth) > 0 else 0.0
         
-        hazard_threshold = 0.5 # 0.5 meters of sand triggers hazard warning
+        hazard_threshold = 0.5
         
         c1, c2, c3 = st.columns(3)
         c1.metric("Max Sand Depth on Road", f"{max_road_sand:.2f} Meters")
         c2.metric("Hazard Threshold", f"{hazard_threshold} Meters")
         
         if max_road_sand > hazard_threshold:
-            c3.error("🚨 CRITICAL HAZARD ALARM: Road Encroachment Detected!")
+            c3.error("CRITICAL HAZARD ALARM: Road Encroachment Detected!")
         else:
-            c3.success("✅ ROAD CLEAR: Highway Protected!")
+            c3.success("ROAD CLEAR: Highway Protected!")
 
         fig_prof, ax_prof = plt.subplots(figsize=(10, 3.5), facecolor='#FDFCF8')
         ax_prof.set_facecolor('#FDFCF8')
@@ -408,14 +400,14 @@ with tab4:
         glass_price_per_ton=glass_price
     )
     
-    st.markdown("### 📊 Annual Financial Return Metrics")
+    st.markdown("### Annual Financial Return Metrics")
     kpi1, kpi2, kpi3, kpi4 = st.columns(4)
     kpi1.metric("Raw Sand Revenue", f"${econ_results['raw_revenue_usd']/1e6:.1f} Million")
     kpi2.metric("Manufactured Glass Revenue", f"${econ_results['glass_revenue_usd']/1e6:.1f} Million")
     kpi3.metric("Net Annual Value-Add", f"+${econ_results['net_value_add_usd']/1e6:.1f} Million")
     kpi4.metric("Value Addition Multiplier", f"{econ_results['value_multiplier']:.1f}x")
 
-    st.success(f"💡 **Direct GDP Impact:** Industrializing this silica sand volume adds **+{econ_results['gdp_boost_percentage']:.3f}% directly to Egypt's Total GDP** ($380 Billion USD baseline) every year!")
+    st.success(f"Direct GDP Impact: Industrializing this silica sand volume adds +{econ_results['gdp_boost_percentage']:.3f}% directly to Egypt's Total GDP ($380 Billion USD baseline) every year!")
 
     df_proj = econ_engine.generate_10year_projection(initial_tonnage=sand_tonnage)
     
@@ -436,20 +428,16 @@ with tab4:
     st.plotly_chart(fig_plotly, use_container_width=True)
 
 # -----------------------------------------------------------------------------
-# MAIN PAGE FOOTER (COPYRIGHT & DEVELOPER LINKS)
+# DOCKED FOOTER (COPYRIGHT & DEVELOPER LINKS)
 # -----------------------------------------------------------------------------
 st.markdown("""
-<div class="footer-container">
-    <div class="footer-title">Copyright © 2026 AeroDune</div>
-    <div class="footer-sub">A Physics-Based Spatiotemporal Simulation Framework for Wind-Blown Sand Encroachment, Windbreak Optimization, and Desert Resource Economics</div>
-    <div class="footer-sub" style="font-weight: 700; color: #5D7052;">Developed by Mohamed Ghanem</div>
-    <div class="footer-links">
-        <a href="https://github.com/mooghanem" target="_blank" class="footer-link-btn">
-            🐙 GitHub Profile
-        </a>
-        <a href="https://www.linkedin.com/in/mohamedkhaledghanem" target="_blank" class="footer-link-btn">
-            💼 LinkedIn Profile
-        </a>
+<div class="clean-footer">
+    <div class="footer-brand">Copyright © 2026 AeroDune</div>
+    <div class="footer-subtitle">A Physics-Based Spatiotemporal Simulation Framework for Wind-Blown Sand Encroachment, Windbreak Optimization, and Desert Resource Economics</div>
+    <div class="footer-dev">Developed by Mohamed Ghanem</div>
+    <div class="footer-links-row">
+        <a href="https://github.com/mooghanem" target="_blank" class="footer-btn">GitHub Profile</a>
+        <a href="https://www.linkedin.com/in/mohamedkhaledghanem" target="_blank" class="footer-btn">LinkedIn Profile</a>
     </div>
 </div>
 """, unsafe_allow_html=True)
