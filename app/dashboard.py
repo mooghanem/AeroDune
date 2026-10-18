@@ -432,7 +432,7 @@ with tab4:
 # -----------------------------------------------------------------------------
 st.markdown("""
 <div class="clean-footer">
-    <div class="footer-brand">Copyright © 2026 AeroDune</div>
+    <div class="footer-brand">© 2026 AeroDune</div>
     <div class="footer-subtitle">A Physics-Based Spatiotemporal Simulation Framework for Wind-Blown Sand Encroachment, Windbreak Optimization, and Desert Resource Economics</div>
     <div class="footer-dev">Developed by Mohamed Ghanem</div>
     <div class="footer-links-row">
